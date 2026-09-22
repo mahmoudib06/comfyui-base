@@ -5,6 +5,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3.12-venv \
+    python3.12-dev \
+    build-essential \
     git \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
