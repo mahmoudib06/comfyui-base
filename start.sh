@@ -20,21 +20,15 @@ if [ "${1:-}" = "--backup" ]; then
         exit 1
     fi
 
-    TEMP_DIR="$(mktemp -d /workspace/.comfy-backup.XXXXXX)"
-    trap 'rm -rf "${TEMP_DIR}"' EXIT
-
-    tar -C "${COMFYUI_DIR}" \
-        --exclude='./comfyui-venv' \
-        -cf "${TEMP_DIR}/comfyui.tar" .
-
-    tar -C "${COMFYUI_DIR}" \
-        -cf "${TEMP_DIR}/venv.tar" comfyui-venv
-
     TARGET="${BACKUP_DIR}/$(date -u +%Y%m%dT%H%M%S)-$$"
     mkdir -p "${TARGET}"
 
-    cp "${TEMP_DIR}/comfyui.tar" "${TARGET}/"
-    cp "${TEMP_DIR}/venv.tar" "${TARGET}/"
+    tar -C "${COMFYUI_DIR}" \
+        --exclude='./comfyui-venv' \
+        -cf "${TARGET}/comfyui.tar" .
+
+    tar -C "${COMFYUI_DIR}" \
+        -cf "${TARGET}/venv.tar" comfyui-venv
 
     tar -tf "${TARGET}/comfyui.tar" > /dev/null
     tar -tf "${TARGET}/venv.tar" > /dev/null
