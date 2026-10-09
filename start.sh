@@ -47,6 +47,13 @@ if [ "${1:-}" = "--backup" ]; then
     exit 0
 fi
 
+RESET=0
+
+if [ "${1:-}" = "--reset" ]; then
+    rm -rf "${COMFYUI_DIR}"
+    RESET=1
+fi
+
 LATEST_BACKUP=""
 
 for marker in "${BACKUP_DIR}"/*/COMPLETE; do
@@ -63,7 +70,7 @@ if [ ! -f "${COMFYUI_DIR}/main.py" ]; then
     mkdir -p "${COMFYUI_DIR}"
 
     if [ -n "${LATEST_BACKUP}" ] && \
-       [ "${FRESH_COMFYUI:-0}" != "1" ]; then
+       [ "${RESET}" = "0" ]; then
         tar -xf "${LATEST_BACKUP}/comfyui.tar" \
             -C "${COMFYUI_DIR}"
     else
@@ -77,7 +84,7 @@ if [ ! -x "${VENV_DIR}/bin/python" ] || \
     rm -rf "${VENV_DIR}"
 
     if [ -n "${LATEST_BACKUP}" ] && \
-       [ "${FRESH_VENV:-0}" != "1" ]; then
+       [ "${RESET}" = "0" ]; then
         tar -xf "${LATEST_BACKUP}/venv.tar" \
             -C "${COMFYUI_DIR}"
     else
@@ -85,6 +92,11 @@ if [ ! -x "${VENV_DIR}/bin/python" ] || \
             --system-site-packages \
             "${VENV_DIR}"
     fi
+fi
+
+if [ "${RESET}" = "1" ]; then
+    echo "ComfyUI und venv zurückgesetzt."
+    exit 0
 fi
 
 exec "$@"
